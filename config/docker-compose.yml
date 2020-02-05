@@ -1,0 +1,15 @@
+version: '2'
+services:
+  rstudio: 
+    environment:
+      - USER=rstudio
+      - PASSWORD=qwerty
+    image: rocker/verse
+    ports:
+      - "8787:8787"
+    links:
+      - selenium:selenium
+  selenium:
+    image: selenium/standalone-chrome:3.141
+    ports:
+      - "4444:4444"

@@ -1,0 +1,20 @@
+.First <- function(){
+  message("\n# Welcome to RStudio Server on Google Compute Engine! Today is ", date(), "\n")
+  
+  googleCloudStorageR::gcs_first()
+  
+  try(googleCloudStorageR::gcs_load(".httr-oauth", "jmh_config", saveToDisk = ".httr-oauth", overwrite = FALSE), silent = TRUE)
+  try(googleCloudStorageR::gcs_load(".gitignore", "jmh_config", saveToDisk = ".gitignore", overwrite = FALSE), silent = TRUE)
+  try(googleCloudStorageR::gcs_load(".gitconfig", "jmh_config", saveToDisk = ".gitconfig", overwrite = FALSE), silent = TRUE)
+  try(dir.create(".ssh"), silent = TRUE)
+  try(googleCloudStorageR::gcs_load("id_rsa", "jmh_config", saveToDisk = ".ssh/id_rsa", overwrite = FALSE), silent = TRUE)
+  try(googleCloudStorageR::gcs_load("id_rsa.pub", "jmh_config", saveToDisk = ".ssh/id_rsa.pub", overwrite = FALSE), silent = TRUE)
+  try(googleCloudStorageR::gcs_load("known_hosts", "jmh_config", saveToDisk = ".ssh/known_hosts", overwrite = FALSE), silent = TRUE)
+  
+}
+
+
+.Last <- function(){
+  googleCloudStorageR::gcs_last()
+  message("\nGoodbye at ", date(), "\n")
+}
