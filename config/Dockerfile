@@ -9,17 +9,18 @@ RUN apt-get -qqy update && apt-get install -qqy \
 RUN install2.r --error \ 
     -r 'http://cran.rstudio.com' \
     googleAuthR \ 
-    googleComputeEngineR \ 
-    googleAnalyticsR \ 
-    searchConsoleR \ 
+    ## googleComputeEngineR \ 
+    ## googleAnalyticsR \ 
+    ## searchConsoleR \ 
     ## googleCloudStorageR \
-    bigQueryR \ 
+    ## bigQueryR \ 
+    seleniumPipes \
     zip \
 ## install Github packages
-    && installGithub.r MarkEdmondson1234/youtubeAnalyticsR \
+    && installGithub.r jasonmhoule/googleCloudStorageR \
+                       ## MarkEdmondson1234/youtubeAnalyticsR \
                        MarkEdmondson1234/googleID \
-                       jasonmhoule/googleCloudStorageR \
-                       cloudyr/googleComputeEngineR \
+                       ## cloudyr/googleComputeEngineR \
 ## clean up
     && rm -rf /tmp/downloaded_packages/ /tmp/*.rds
 
