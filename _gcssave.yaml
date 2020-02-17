@@ -1,5 +1,5 @@
 ## The GCS bucket to save/load R workspace from
-bucket: new-bucket-name-here
+bucket: rc-alexandria
 
 ## set to FALSE if you want to load on R session startup
 load_on_startup: FALSE
