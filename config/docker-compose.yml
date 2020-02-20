@@ -4,7 +4,7 @@ services:
     environment:
       - USER=rstudio
       - PASSWORD=qwerty
-    image: gcr.io/ml-learning-199501/github.com/jasonmhoule/rc-alexandria:8f37315
+    image: gcr.io/ml-learning-199501/github.com/jasonmhoule/rc-alexandria:32c6003
     ports:
       - "8787:8787"
     links:
