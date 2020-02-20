@@ -14,7 +14,8 @@ RUN install2.r --error \
     ## searchConsoleR \ 
     ## googleCloudStorageR \
     ## bigQueryR \ 
-    seleniumPipes \
+    ## seleniumPipes \
+    RSelenium \
     zip \
 ## install Github packages
     && installGithub.r jasonmhoule/googleCloudStorageR \
