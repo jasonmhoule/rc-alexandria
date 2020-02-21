@@ -7,31 +7,57 @@ remDr$open()
 # remDr$navigate("http://www.r-project.org")
 # remDr$screenshot(display = TRUE)
 
-remDr$navigate("http://www.classical-homeschooling.org/celoop/1000-primary.html")
-remDr$screenshot(display = TRUE)
+get_list <- function(url, remDr) {
+  
+  # Navigate and read page html
+  remDr$navigate(url)
+  remDr$screenshot(display = TRUE)
+  
+  page <- read_html(remDr$getPageSource()[[1]])
+  
+  # Extract lists of elements
+  headers <- page %>% 
+    html_nodes("h1") %>% 
+    html_text()
+  
+  lists <- page %>% 
+    html_nodes(".list") %>% 
+    as.character() %>% 
+    str_replace_all("<br>","\n") %>% 
+    str_replace_all("<.*?>","") %>% 
+    str_replace_all("[\n]{1,}","\n") %>% 
+    str_replace_all("^\n","") %>% 
+    str_split("\n")
+  
+  if(grepl("primary", url)) {
+    lists <- lists[-2]  
+  }
+  
+  # Build a tibble
+  sct <- length(headers)
+  tb_1 <- map_dfr(seq_len(sct), ~ tibble(x = lists[[.x]], y = headers[[.x]]))
+  tb_2 <- tb_1 %>% 
+    mutate(ra = grepl("RA ?$", x)) %>% 
+    mutate(x = str_replace_all(x, "&amp;", "and") %>% str_replace_all("RA ?$", "")) %>% 
+    mutate(title = str_extract(x, ".*? by ") %>% str_remove("(edited)? by ") %>% str_trim(side = "both")) %>% 
+    mutate(author = str_extract(x, " by .*") %>% str_remove_all(" by |,.*") %>% str_trim(side = "both")) %>% 
+    mutate(tnotes = str_extract(title, "and oth.*")) %>% 
+    mutate(title = str_remove(title, " and oth.*")) %>% 
+    mutate(anotes = str_extract(author, "and oth.*|\\(.*\\)")) %>% 
+    mutate(author = str_remove(author, " and oth.*|\\(.*\\)|publish.*")) %>% 
+    rowwise() %>% 
+    mutate(notes = stringi::stri_flatten(c(tnotes, anotes), ", ", na_empty = TRUE, omit_empty = TRUE)) %>% 
+    select(-c(tnotes, anotes))
+  
+  return(tb_2)
+}
 
-page <- read_html(remDr$getPageSource()[[1]])
+urls <- c("http://www.classical-homeschooling.org/celoop/1000-primary.html",
+          "http://www.classical-homeschooling.org/celoop/1000-elementary.html",
+          "http://www.classical-homeschooling.org/celoop/1000-junior.html",
+          "http://www.classical-homeschooling.org/celoop/1000-senior.html")
 
-headers <- page %>% 
-  html_nodes("h1") %>% 
-  html_text()
+# flist <- bind_rows(tbp, tbe, tbj, tbs)
+flist <- map_dfr(urls, get_list, remDr)
 
-lists_raw <- page %>% 
-  html_nodes(".list") %>% 
-  html_text()
-
-lists_raw <- page %>% 
-  html_nodes(".list") %>% 
-  as.character() %>% 
-  str_replace_all("<br>","\n") %>% 
-  str_replace_all("<.*?>","") %>% 
-  str_replace_all("[\n]{1,}","\n") %>% 
-  str_replace_all("^\n","") %>% 
-  str_split("\n")
-
-lists <- lists_raw[c(1,3:8)]  
-
-lists[[1]]
-
-
-
+saveRDS(flist, "1000goodbooks.rds")
